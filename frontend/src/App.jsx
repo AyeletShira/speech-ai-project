@@ -11,61 +11,71 @@ function App() {
   const [error, setError] = useState(null);
   const [isCopied, setIsCopied] = useState(false);
 
+  // פונקציית עיבוד הטקסט להסרת Markdown והדגשת כותרות
+  const formatReport = (text) => {
+    if (!text) return "";
+    return text.trim()
+      .replace(/#{1,6}\s?(.*)/g, '<strong>$1</strong>')
+      .replace(/\*\*\*(.*?)\*\*\*/g, '<strong>$1</strong>')
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*/g, '')
+      .replace(/\n/g, '<br/>');
+  };
+
   const handleGenerate = async () => {
     if (!patientName || !notes) {
-      setError("נא למלא שם מטופל והערות");
+      setError("נא למלא שם מטופל/ת והערות קליניות");
       return;
     }
-
     setLoading(true);
     setError(null);
     setReport(null);
     setIsCopied(false);
 
-    const payload = {
-      patient_name: patientName,
-      sessions: [{
-        date: new Date().toLocaleDateString("he-IL"),
-        exercises_done: ["תרגול"],
-        notes: notes
-      }]
-    };
-
     try {
-      const response = await axios.post('http://localhost:8000/reports/generate', payload);
+      const response = await axios.post('http://localhost:8000/reports/generate', {
+        patient_name: patientName,
+        sessions: [{
+          date: new Date().toLocaleDateString("he-IL"),
+          notes: notes,
+          exercises_done: []
+        }]
+      });
       setReport(response.data.report_text);
     } catch (err) {
       setError("שגיאה בחיבור לשרת. וודא שה-Backend פעיל.");
-      console.error(err);
     } finally {
       setLoading(false);
     }
   };
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(report);
+    const cleanText = report.replace(/[*#]/g, '');
+    navigator.clipboard.writeText(cleanText);
     setIsCopied(true);
     setTimeout(() => setIsCopied(false), 2000);
   };
 
-  const downloadPDF = () => {
-    const element = document.getElementById('report-content');
-    const opt = {
-      margin: 10,
-      filename: `דוח_${patientName}.pdf`,
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2 },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    };
-    html2pdf().set(opt).from(element).save();
-  };
-
   return (
     <div className="container">
+      {/* פס התקדמות עליון */}
+      {loading && <div className="progress-bar-container"><div className="progress-bar-fill"></div></div>}
+      
       <header className="main-header-area">
         <span className="gemini-sparkle">✨</span>
         <h1 className="header">Speech AI</h1>
       </header>
+
+      {/* תיבת הוראות למטפל */}
+      <div className="instructions-box">
+        <h4>💡 איך לקבל דוח מושלם?</h4>
+        <ul>
+          <li>התחילו בפרטים הטכניים: <strong>"זאבי, בן 4, גן חובה, 8/21 טיפולים"</strong>.</li>
+          <li>ציינו רקע שפתי (דו-לשוניות) והיסטוריה רפואית בקצרה.</li>
+          <li>כתבו דוגמאות לטעויות (לדוגמה: <strong>"אומר בת במקום אחות"</strong>).</li>
+          <li>ציינו את מספר הטיפולים המבוקש להמשך (למשל: "מבקש 12 מפגשים").</li>
+        </ul>
+      </div>
 
       <main className="form-card">
         <div className="form-group">
@@ -75,23 +85,33 @@ function App() {
             value={patientName} 
             onChange={(e) => setPatientName(e.target.value)} 
             placeholder="שם מלא..." 
+            disabled={loading} 
           />
         </div>
-
         <div className="form-group">
-          <label>הערות קליניות</label>
+          <label>הערות קליניות מהטיפול</label>
           <textarea 
             value={notes} 
             onChange={(e) => setNotes(e.target.value)} 
-            rows="5" 
-            placeholder="מה קרה בטיפול?" 
+            rows="10" 
+            placeholder="לדוגמה: הילד משתף פעולה, יש קושי בתחביר, אומר 'זכר' במקום 'נקבה'..." 
+            disabled={loading} 
           />
         </div>
-
-        <button className="generate-btn" onClick={handleGenerate} disabled={loading}>
-          {loading ? "מייצר דוח..." : "צור דוח ✨"}
+        <button 
+          className={`generate-btn ${loading ? 'btn-loading' : ''}`} 
+          onClick={handleGenerate} 
+          disabled={loading}
+        >
+          {loading ? (
+            <div className="loader-container">
+              <div className="spinner"></div>
+              <span>בונה את הדוח...</span>
+            </div>
+          ) : (
+            "צור דוח מקצועי ✨"
+          )}
         </button>
-
         {error && <div className="error-message">{error}</div>}
       </main>
 
@@ -100,7 +120,12 @@ function App() {
           <div className="result-header">
             <h3>🪄 הדוח מוכן</h3>
             <div className="action-buttons">
-              <button onClick={downloadPDF} className="btn-pdf">PDF 📥</button>
+              <button 
+                onClick={() => html2pdf().from(document.getElementById('report-content')).save()} 
+                className="btn-pdf"
+              >
+                PDF 📥
+              </button>
               <button onClick={copyToClipboard} className="btn-copy">
                 {isCopied ? 'הועתק! ✅' : 'העתק'}
               </button>
@@ -110,10 +135,9 @@ function App() {
             id="report-content" 
             contentEditable="true" 
             suppressContentEditableWarning={true} 
-            className="report-paper"
-          >
-            {report}
-          </div>
+            className="report-paper" 
+            dangerouslySetInnerHTML={{ __html: formatReport(report) }} 
+          />
         </section>
       )}
     </div>
