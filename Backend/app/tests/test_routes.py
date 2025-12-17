@@ -17,7 +17,7 @@ def test_read_root():
     response = client.get("/")
     assert response.status_code == 200
     # מוודאים שהתשובה היא מה שכתוב ב-main.py
-    assert response.json() == {"message": "Server is running correctly with CORS enabled!"}
+    assert response.json() == {"message": "Welcome to Speech Therapy AI API"}
 
 @patch("app.services.report_service.generate_with_gemini") 
 def test_generate_report_end_to_end(mock_gemini):

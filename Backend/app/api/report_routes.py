@@ -19,7 +19,7 @@ async def generate_report_endpoint(report_data: ReportInput):
     try:
         # כאן התיקון: אנחנו מפרקים את המידע ל-שם ול-סשנים
         # אנחנו הופכים את הסשנים לרשימה של מילונים (dict) כדי שהשירות יבין אותם
-        sessions_list = [s.dict() for s in report_data.sessions]
+        sessions_list = [s.model_dump() for s in report_data.sessions]
         
         result_text = create_report(report_data.patient_name, sessions_list)
         
