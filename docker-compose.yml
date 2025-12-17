@@ -7,11 +7,10 @@ services:
       - "8000:8000"
     volumes:
       - ./Backend:/app
-    # הוספנו את השורה הזו:
-    env_file:
-      - ./Backend/.env  
     environment:
       - PYTHONUNBUFFERED=1
+      # שימי לב: תעתיקי לפה את המפתח האמיתי שלך במקום ה-XXX
+      - GOOGLE_API_KEY=AIzaSyCNg283Nndd86OVUcQdBEOSLiaWOL0Mb7o
 
   frontend:
     build: ./frontend
