@@ -43,7 +43,6 @@ CORS Management: הגדרת Middleware מורכב ב-FastAPI לאישור בקש
 🚀 הוראות הרצה מהירות
 שכפול המאגר (git clone).
 
-הגדרת GEMINI_API_KEY בקובץ .env בתיקיית ה-backend.
 
 הרצה בטרמינל: docker-compose up --build.
 

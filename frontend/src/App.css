@@ -66,5 +66,5 @@ input, textarea { width: 100%; padding: 14px; border: 1px solid #ddd; border-rad
 }
 
 .result-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-.btn-pdf { background: #7db9e7; color: white; border: none; padding: 10px 22px; border-radius: 50px; cursor: pointer; font-weight: bold; }
+.btn-pdf { background: #f059f3; color: white; border: none; padding: 10px 22px; border-radius: 50px; cursor: pointer; font-weight: bold; }
 .btn-copy { background: #5f6368; color: white; border: none; padding: 10px 22px; border-radius: 50px; cursor: pointer; font-weight: bold; margin-right: 10px; }

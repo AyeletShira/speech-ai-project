@@ -10,8 +10,7 @@ services:
     environment:
       - PYTHONUNBUFFERED=1
       # שימי לב: תעתיקי לפה את המפתח האמיתי שלך במקום ה-XXX
-      - GOOGLE_API_KEY=AIzaSyByB4HBf0XHTepn4OThsA7H4J1dOXqzFoQ
-
+      - GOOGLE_API_KEY=${GEMINI_API_KEY}
   frontend:
     build: ./frontend
     ports:
