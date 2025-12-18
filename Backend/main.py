@@ -34,7 +34,7 @@ app = FastAPI(title="Speech Therapy AI API")
 # הגדרות CORS - זה התיקון הקריטי!
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # מאפשר לכל מקור (כולל localhost:5173) לגשת
+    allow_origins=["https://speech-ai-project-1.onrender.com"],
     allow_credentials=True,
     allow_methods=["*"],  # מאפשר את כל סוגי הבקשות (POST, GET וכו')
     allow_headers=["*"],

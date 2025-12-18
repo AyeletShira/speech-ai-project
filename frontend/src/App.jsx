@@ -10,7 +10,8 @@ function App() {
   const [report, setReport] = useState(null);
   const [error, setError] = useState(null);
   const [isCopied, setIsCopied] = useState(false);
-  const API_URL = "https://speech-ai-backend.onrender.com";
+  const API_URL = process.env.REACT_APP_API_URL;
+
   // פונקציית עיבוד הטקסט להסרת Markdown והדגשת כותרות
   const formatReport = (text) => {
     if (!text) return "";
