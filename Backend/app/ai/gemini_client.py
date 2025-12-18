@@ -14,7 +14,7 @@ def generate_with_gemini(prompt_text):
     if not api_key:
         return "Error: GEMINI_API_KEY is missing. Please check Render Environment variables."
 
-    model_name = "gemini-1.5-flash" # עדכון קטן לשם המודל העדכני
+    model_name = "gemini-flash-latest" # עדכון קטן לשם המודל העדכני
     url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={api_key}"
     
     headers = {'Content-Type': 'application/json'}
