@@ -10,7 +10,7 @@ services:
     environment:
       - PYTHONUNBUFFERED=1
       # שימי לב: תעתיקי לפה את המפתח האמיתי שלך במקום ה-XXX
-      - GOOGLE_API_KEY=AIzaSyDOIsyA6ZaQMUPkp_YBP6kfdZflZqnMnRc
+      - GOOGLE_API_KEY=AIzaSyByB4HBf0XHTepn4OThsA7H4J1dOXqzFoQ
 
   frontend:
     build: ./frontend

@@ -10,7 +10,7 @@ function App() {
   const [report, setReport] = useState(null);
   const [error, setError] = useState(null);
   const [isCopied, setIsCopied] = useState(false);
-
+  const API_URL = "https://speech-ai-backend.onrender.com";
   // פונקציית עיבוד הטקסט להסרת Markdown והדגשת כותרות
   const formatReport = (text) => {
     if (!text) return "";
@@ -32,8 +32,10 @@ function App() {
     setReport(null);
     setIsCopied(false);
 
+
+
     try {
-      const response = await axios.post('http://localhost:8000/reports/generate', {
+      const response = await axios.post(`${API_URL}/reports/generate`, {
         patient_name: patientName,
         sessions: [{
           date: new Date().toLocaleDateString("he-IL"),
