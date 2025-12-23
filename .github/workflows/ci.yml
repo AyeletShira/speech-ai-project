@@ -1,4 +1,4 @@
-name: Run Tests
+name: Run Tests and Coverage
 
 on: [push]
 
@@ -6,7 +6,8 @@ jobs:
   test-backend:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
       
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -17,8 +18,34 @@ jobs:
         run: |
           cd Backend
           pip install -r requirements.txt
+          pip install pytest-cov
           
-      - name: Run Tests
+      - name: Run Backend Tests with Coverage
         run: |
           cd Backend
-          pytest
+          # Runs tests and generates a coverage report in the terminal
+          pytest --cov=app --cov-report=term-missing
+
+  test-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+          
+      - name: Install dependencies
+        run: |
+          cd frontend
+          npm install
+          # Ensures coverage library is installed for the CI environment
+          npm install -D @vitest/coverage-v8
+          
+      - name: Run Frontend Tests with Coverage
+        run: |
+          cd frontend
+          # This command executes the 'test' script defined in package.json
+          npm test
