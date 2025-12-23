@@ -1,49 +1,42 @@
 📋 Speech AI: Clinical Report Automation System
-פרויקט גמר: בינה מלאכותית בשירות קלינאיות התקשורת
-מערכת Full-Stack מבוססת AI המייצרת אוטומציה מלאה לכתיבת מסמכי "בקשה להמשך טיפול". המערכת מקצרת זמן כתיבת דוח מ-30 דקות ל-30 שניות בלבד, תוך שמירה על דיוק קליני ורהיטות שפתית.
+AI-Powered Full-Stack Project | Speech Therapy Automation
+An AI-driven system designed to automate professional "Request for Continued Treatment" reports. The platform reduces report writing time from 30 minutes to 30 seconds, ensuring clinical precision and linguistic fluency.
 
-🛠 הארכיטקטורה הטכנולוגית (Technical Stack)
-Backend: FastAPI (Python 3.9) - בחירה בשרת אסינכרוני מהיר המאפשר ניהול בקשות AI ללא חסימת ה-Event Loop.
+🛠 Technical Stack
+Backend: FastAPI (Python 3.9) – High-performance asynchronous server for non-blocking AI request management.
 
-Frontend: React 18 + Vite - שימוש ב-State Management לניהול זרימת נתונים דינמית מהמשתמש ועד לקבלת התוצאה מה-AI.
+Frontend: React 18 + Vite – Dynamic state management for real-time user input and AI output handling.
 
-Containerization: Docker & Docker Compose - ניהול סביבות עבודה מבודדות ל-Frontend ו-Backend, מה שמבטיח הרצה חלקה ("It works on my machine").
+Containerization: Docker & Docker Compose – Isolated environments ensuring seamless deployment.
 
-AI Integration: Google Gemini SDK (gemini-1.5-flash) - התממשקות למודלי שפה גדולים (LLM) דרך API מאובטח.
+AI Integration: Google Gemini SDK (gemini-1.5-flash) – Secure LLM integration for clinical text generation.
 
-🧠 אסטרטגיית ה-Prompt Engineering
-הפרויקט מתמקד בטכניקות מתקדמות של הנדסת פרומפטים:
+🧠 Prompt Engineering Strategy
+Role Assignment: Expert Speech-Language Pathologist (SLP) persona implementation.
 
-Role Assignment: המודל הונחה לתפקד כקלינאית תקשורת בעלת ניסיון קליני עשיר.
+Inference Logic: Automated medical deduction from raw therapy notes (e.g., ENT findings vs. linguistic progress).
 
-Inference Logic: המערכת יודעת להסיק מסקנות רפואיות ממידע גולמי (למשל: הקשר בין ממצא א.א.ג לבין התקדמות שפתית).
+Constraint Satisfaction: Enforced professional structure (Clinical background, diagnostic summary, standardized deviations, and goals).
 
-Few-Shot & Domain Expertise: הטמעת דוגמאות לניתוח מקרים רב-לשוניים מורכבים (כמו המרה של שפה רביעית לעברית).
+🔄 Data Flow & Validation
+Server-Side Validation: Rigorous data integrity using Pydantic Schemas to ensure structure and prevent 422 errors.
 
-Constraint Satisfaction: אכיפה של מבנה דוח אחיד (בס"ד, רקע, סיכום אבחון כולל סטיות תקן, מטרות והמלצות).
+Network Layer: Secure RESTful communication with strict CORS middleware management.
 
-🔄 זרימת נתונים (Detailed Data Flow)
-Client-Side: איסוף נתונים גולמיים ומניפולציה של ה-DOM לצורך הצגת PDF ועריכה חיה.
+Client-Side: DOM manipulation for live editing and Hebrew-compatible PDF generation.
 
-Network Layer: תקשורת RESTful מאובטחת תחת הגדרות CORS קפדניות.
+🧪 Quality Assurance & Testing (CI/CD)
+Backend Testing (Pytest): Achieved 84% Code Coverage with 7/7 passing tests, covering validation, error handling, and end-to-end logic.
 
-Server-Side Validation: שימוש ב-Pydantic Schemas לאימות מבנה הנתונים ומניעת שגיאות 422.
+Frontend Testing (Vitest): Achieved 70% Component Coverage with 7/7 passing tests, including UI rendering, API error states, and Clipboard API integration.
 
-AI Processing: בניית פרומפט דינמי, עיבוד הנתונים ב-Cloud והחזרת תשובה מובנית (JSON).
+Automated Pipeline: Integrated GitHub Actions for continuous testing on every code push, ensuring a production-ready system.
 
-🧪 אתגרים טכניים שפתרתי בפרויקט
-סנכרון Container-to-Container: הגדרת תקשורת רשת פנימית בתוך Docker Compose לחיבור ה-Frontend ל-API.
+🚀 Key Technical Challenges Solved
+RTL PDF Export: Resolved Right-to-Left (Hebrew) formatting issues in PDF generation using html2pdf.js.
 
-RTL PDF Export: פתרון אתגרי ייצוא טקסט מימין לשמאל (Hebrew Support) בפורמט PDF בעזרת html2pdf.js.
+Container Synchronization: Configured internal network communication between frontend and API services.
 
-Editable UI: יצירת ממשק עריכה אינטואיטיבי (WYSIWYG) המאפשר סנכרון בין טקסט ה-AI לבין התיקונים הידניים של הקלינאית.
+Editable WYSIWYG UI: Implemented a seamless synchronization bridge between AI-generated text and manual clinician edits.
 
-CORS Management: הגדרת Middleware מורכב ב-FastAPI לאישור בקשות מדפדפנים בסביבת פיתוח מבוזרת.
-
-🚀 הוראות הרצה מהירות
-שכפול המאגר (git clone).
-
-
-הרצה בטרמינל: docker-compose up --build.
-
-פותח כפרויקט גמר על ידי איילת סורובסקי ויעל בלוך | דצמבר 2025
+Developed by: Ayelet Surovsky & Yael Bloch | December 2025
