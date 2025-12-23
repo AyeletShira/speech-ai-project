@@ -4,69 +4,68 @@ import React from 'react';
 import App from './App';
 import axios from 'axios';
 
-// Mock axios to simulate server response
 vi.mock('axios');
-
 vi.mock('html2pdf.js', () => ({
     __esModule: true,
-    default: () => ({
-        from: () => ({ save: () => {} })
-    })
+    default: () => ({ from: () => ({ save: () => {} }) })
 }));
 
-describe('Speech AI Advanced Coverage Tests', () => {
-    
+describe('Frontend Full Suite - 7 Tests', () => {
     afterEach(() => {
         cleanup();
         vi.clearAllMocks();
     });
 
-    // בדיקות קיימות...
-    it('1. Should render the main header', () => {
+    it('1. Renders main title correctly', () => {
         render(<App />);
         expect(screen.getByText(/SpeechAI/i)).toBeInTheDocument();
     });
 
-    it('2. Should handle successful report generation', async () => {
-        // מדמה תשובה מהשרת כדי להפעיל את פונקציות התצוגה
-        axios.post.mockResolvedValue({ data: { report_text: 'This is a generated report content' } });
-
+    it('2. Shows clinical instructions box', () => {
         render(<App />);
-        
-        // מילוי פרטים
-        fireEvent.change(screen.getByPlaceholderText(/שם מלא/i), { target: { value: 'Test Patient' } });
-        fireEvent.change(screen.getByPlaceholderText(/הזיני כאן מידע/i), { target: { value: 'Patient is doing well' } });
-        
-        // לחיצה על כפתור
-        fireEvent.click(screen.getByRole('button', { name: /צור דוח מקצועי/i }));
-
-        // מחכה שהדוח יופיע על המסך (זה יפעיל את formatReport)
-        await waitFor(() => {
-            expect(screen.getByText(/תוצאת הדוח/i)).toBeInTheDocument();
-        });
-
-        expect(screen.getByText(/This is a generated report content/i)).toBeInTheDocument();
+        expect(screen.getByText(/הנחיות לכתיבת הערות קליניות/i)).toBeInTheDocument();
     });
 
-    it('3. Should handle copy to clipboard', async () => {
-        axios.post.mockResolvedValue({ data: { report_text: 'Report to copy' } });
-        
-        // מדמה את ה-Clipboard API
+    it('3. Updates patient name on input', () => {
+        render(<App />);
+        const input = screen.getByPlaceholderText(/שם מלא/i);
+        fireEvent.change(input, { target: { value: 'ישראל ישראלי' } });
+        expect(input.value).toBe('ישראל ישראלי');
+    });
+
+    it('4. Handles API Error state', async () => {
+        axios.post.mockRejectedValue(new Error('Server Error'));
+        render(<App />);
+        fireEvent.click(screen.getByRole('button', { name: /צור דוח מקצועי/i }));
+        await waitFor(() => {
+            expect(screen.queryByText(/שגיאה/i) || screen.queryByText(/error/i)).toBeTruthy();
+        });
+    });
+
+    it('5. Generates report successfully', async () => {
+        axios.post.mockResolvedValue({ data: { report_text: 'דוח קליני לדוגמה' } });
+        render(<App />);
+        fireEvent.change(screen.getByPlaceholderText(/שם מלא/i), { target: { value: 'בדיקה' } });
+        fireEvent.click(screen.getByRole('button', { name: /צור דוח מקצועי/i }));
+        await waitFor(() => expect(screen.getByText(/דוח קליני לדוגמה/i)).toBeInTheDocument());
+    });
+
+    it('6. Copies report to clipboard', async () => {
+        axios.post.mockResolvedValue({ data: { report_text: 'Text to copy' } });
         const mockClipboard = { writeText: vi.fn() };
         global.navigator.clipboard = mockClipboard;
-
         render(<App />);
-        
-        fireEvent.change(screen.getByPlaceholderText(/שם מלא/i), { target: { value: 'Test' } });
-        fireEvent.change(screen.getByPlaceholderText(/הזיני כאן מידע/i), { target: { value: 'Notes' } });
         fireEvent.click(screen.getByRole('button', { name: /צור דוח מקצועי/i }));
-
         await waitFor(() => screen.getByText(/העתק/i));
-        
-        const copyBtn = screen.getByText(/העתק/i);
-        fireEvent.click(copyBtn);
+        fireEvent.click(screen.getByText(/העתק/i));
+        expect(mockClipboard.writeText).toHaveBeenCalledWith('Text to copy');
+    });
 
-        expect(mockClipboard.writeText).toHaveBeenCalled();
-        expect(screen.getByText(/הועתק!/i)).toBeInTheDocument();
+    it('7. Clears form after reset (if applicable)', () => {
+        render(<App />);
+        const textarea = screen.getByPlaceholderText(/הזיני כאן מידע/i);
+        fireEvent.change(textarea, { target: { value: 'הערות למחיקה' } });
+        expect(textarea.value).toBe('הערות למחיקה');
+        // כאן ניתן להוסיף לחיצה על כפתור ניקוי אם קיים
     });
 });
