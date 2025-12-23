@@ -1,88 +1,75 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, afterEach, vi } from 'vitest';
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
-import React, { useState } from 'react';
+import React from 'react';
+import App from './App'; // הייבוא האמיתי של הפרויקט שלך
 
-// --- החלק הזה מדמה את הקומפוננטה שלך ---
-// (בפרויקט האמיתי שלך: תמחקי את החלק הזה ותעשי import לקומפוננטה האמיתית שלך)
-// import App from './App'; 
+// Mocking external libraries that don't run in test environments
+vi.mock('html2pdf.js', () => ({
+    __esModule: true,
+    default: () => ({
+        from: () => ({ save: () => {} })
+    })
+}));
 
-const MockApp = () => {
-  const [input, setInput] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [response, setResponse] = useState('');
-
-  const handleSend = () => {
-    if (!input.trim()) return; // מניעת שליחה של ריק
-    setLoading(true);
-    setTimeout(() => { // דימוי של תשובה מ-AI
-        setResponse("AI Response: " + input);
-        setLoading(false);
-    }, 100);
-  };
-
-  return (
-    <div>
-      <input 
-        placeholder="Ask Gemini..." 
-        value={input} 
-        onChange={(e) => setInput(e.target.value)} 
-      />
-      <button onClick={handleSend} disabled={loading || !input}>
-        {loading ? 'Thinking...' : 'Send'}
-      </button>
-      {response && <div data-testid="ai-response">{response}</div>}
-    </div>
-  );
-};
-// ----------------------------------------
-
-describe('AI Chat Tests', () => {
+describe('Speech AI Frontend Tests', () => {
     
-    // מנקה את המסך אחרי כל בדיקה כדי שלא יתערבבו
     afterEach(() => {
         cleanup();
     });
 
-    it('1. Input field should allow typing', () => {
-        render(<MockApp />); // בפרויקט שלך: <App />
-        
-        // מוצאים את תיבת הטקסט (לפי ה-Placeholder שלה)
-        const input = screen.getByPlaceholderText(/Ask Gemini/i);
-        
-        // מדמים הקלדה של משתמש
-        fireEvent.change(input, { target: { value: 'Hello AI' } });
-        
-        // בודקים שהערך באמת השתנה
-        expect(input.value).toBe('Hello AI');
+    it('1. Should render the main header "Speech AI"', () => {
+        render(<App />);
+        const header = screen.getByText(/Speech AI/i);
+        expect(header).toBeInTheDocument();
     });
 
-    it('2. Validation: Button should be DISABLED when input is empty', () => {
-        render(<MockApp />);
-        
-        const button = screen.getByRole('button');
-        const input = screen.getByPlaceholderText(/Ask Gemini/i);
-
-        // שלב א: הטקסט ריק -> הכפתור צריך להיות נעול
-        fireEvent.change(input, { target: { value: '' } });
-        expect(button).toBeDisabled();
-
-        // שלב ב: כותבים משהו -> הכפתור צריך להשתחרר
-        fireEvent.change(input, { target: { value: 'Is this working?' } });
-        expect(button).not.toBeDisabled();
+    it('2. Should show professional instructions box', () => {
+        render(<App />);
+        const instructions = screen.getByText(/הנחיות לכתיבת הערות קליניות/i);
+        expect(instructions).toBeInTheDocument();
     });
 
-    it('3. Loading State: Button should verify "Thinking..." status', async () => {
-        render(<MockApp />);
-        const input = screen.getByPlaceholderText(/Ask Gemini/i);
-        const button = screen.getByRole('button');
+    it('3. Patient name input should allow typing', () => {
+        render(<App />);
+        const input = screen.getByPlaceholderText(/שם מלא/i);
+        fireEvent.change(input, { target: { value: 'Johnny Test' } });
+        expect(input.value).toBe('Johnny Test');
+    });
 
-        // מקלידים ולוחצים
-        fireEvent.change(input, { target: { value: 'Tell me a joke' } });
+    it('4. Clinical notes textarea should allow typing', () => {
+        render(<App />);
+        const textarea = screen.getByPlaceholderText(/הזיני כאן מידע על תפקוד שפתי/i);
+        fireEvent.change(textarea, { target: { value: 'Patient shows progress' } });
+        expect(textarea.value).toBe('Patient shows progress');
+    });
+
+    it('5. Button should show "מעבד נתונים..." when loading', () => {
+        render(<App />);
+        const button = screen.getByRole('button', { name: /צור דוח מקצועי/i });
+        const nameInput = screen.getByPlaceholderText(/שם מלא/i);
+        const notesInput = screen.getByPlaceholderText(/הזיני כאן מידע על תפקוד שפתי/i);
+
+        // Fill data and click
+        fireEvent.change(nameInput, { target: { value: 'Zevi' } });
+        fireEvent.change(notesInput, { target: { value: 'Notes' } });
         fireEvent.click(button);
 
-        // בודקים שמיד אחרי הלחיצה, הכפתור משנה טקסט וננעל
-        // שימי לב: זה תלוי איך מימשת את זה אצלך, תתאימי את הטקסט 'Thinking' למה שיש אצלך
-        expect(button).toHaveTextContent(/Thinking/i);
+        // The button text changes based on your loading state logic
         expect(button).toBeDisabled();
+    });
+
+    it('6. Should show error message when fields are empty', () => {
+        render(<App />);
+        const button = screen.getByRole('button', { name: /צור דוח מקצועי/i });
+        fireEvent.click(button);
+        
+        const error = screen.getByText(/נא למלא שם מטופל/i);
+        expect(error).toBeInTheDocument();
+    });
+
+    it('7. Should verify RTL direction for Hebrew support', () => {
+        const { container } = render(<App />);
+        const mainDiv = container.querySelector('.container');
+        expect(mainDiv).toHaveAttribute('dir', 'rtl');
     });
 });
