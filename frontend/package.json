@@ -7,12 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-<<<<<<< HEAD
-    "preview": "vite preview"
-=======
     "preview": "vite preview",
     "test": "vitest run --coverage --environment jsdom"
->>>>>>> 9635140 (Add automated tests and coverage reports for FE and BE)
   },
   "dependencies": {
     "axios": "^1.13.2",
