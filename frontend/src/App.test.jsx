@@ -24,7 +24,7 @@ describe('Speech AI Advanced Coverage Tests', () => {
     // בדיקות קיימות...
     it('1. Should render the main header', () => {
         render(<App />);
-        expect(screen.getByText(/Speech AI/i)).toBeInTheDocument();
+        expect(screen.getByText(/SpeechAI/i)).toBeInTheDocument();
     });
 
     it('2. Should handle successful report generation', async () => {

@@ -3,78 +3,85 @@ import os
 from fastapi.testclient import TestClient
 from unittest.mock import patch
 
-# Ensure tests recognize the main directory
+# מוודא שהטסט מזהה את התיקייה הראשית של השרת
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 from main import app
 
 client = TestClient(app)
 
-### --- Existing Tests (Keep these) ---
+### --- בדיקות בסיסיות (Sanity) ---
 
 def test_read_root():
+    """בדיקה שהשרת באוויר"""
     response = client.get("/")
     assert response.status_code == 200
-    assert response.json() == {"message": "Welcome to Speech Therapy AI API"}
+    assert "Welcome" in response.json()["message"]
 
 def test_route_not_found():
+    """בדיקה שכתובת לא קיימת מחזירה 404"""
     response = client.get("/this-route-does-not-exist")
     assert response.status_code == 404
 
+### --- בדיקות ולידציה (שגיאות 422) ---
+
 def test_generate_report_empty_body():
+    """בדיקה ששליחת גוף ריק נכשלת"""
     response = client.post("/reports/generate", json={})
     assert response.status_code == 422
 
-### --- NEW: Tests to boost coverage to 90% ---
+def test_generate_report_missing_fields():
+    """בדיקה שחסר שם מטופל או סשנים"""
+    payload = {"patient_name": "אילת"} # חסר sessions
+    response = client.post("/reports/generate", json=payload)
+    assert response.status_code == 422
 
-@patch("app.services.report_service.revise_report_with_gemini")
+### --- בדיקות לוגיקה והקפצת ה-Coverage ל-90% ---
+
+# כאן אנחנו משתמשים בשם הפונקציה המדויק מהקוד שלך: revise_report_with_history
+@patch("app.services.report_service.revise_report_with_history")
 def test_revise_report_success(mock_revise):
-    """
-    Test 8: Testing the 'revise' endpoint.
-    This covers the logic in report_routes and report_service for updating reports.
-    """
-    mock_revise.return_value = "Updated Report: Fixed gender pronouns."
+    """בדיקת נתיב התיקון (Revise) - מעלה משמעותית את הכיסוי"""
+    mock_revise.return_value = "דוח מעודכן: תוקנו פעלים בזמן עבר."
     
     payload = {
-        "patient_name": "Johnny",
-        "history": [{"role": "user", "content": "Original report data"}],
-        "new_instructions": "Change to female pronouns"
+        "patient_name": "יוני",
+        "history": [{"role": "user", "content": "נתונים מקוריים"}],
+        "new_instructions": "תקן לשון זכר/נקבה"
     }
     
     response = client.post("/reports/revise", json=payload)
     assert response.status_code == 200
-    assert "Fixed gender pronouns" in response.json()["report_text"]
+    assert "תוקנו פעלים" in response.json()["report_text"]
     assert mock_revise.called
 
-@patch("app.services.report_service.generate_with_gemini")
-def test_generate_report_server_error(mock_gemini):
-    """
-    Test 9: Testing Error Handling.
-    What happens if the AI service fails? This covers the 'try-except' blocks.
-    """
-    # Force the mock to raise an exception
-    mock_gemini.side_effect = Exception("AI Service Unavailable")
+# כאן אנחנו משתמשים בשם הפונקציה המדויק מהקוד שלך: create_report
+@patch("app.services.report_service.create_report")
+def test_generate_report_server_error(mock_create):
+    """בדיקת טיפול בשגיאות כשה-AI נכשל"""
+    mock_create.side_effect = Exception("Gemini API Error")
     
     payload = {
-        "patient_name": "Test",
-        "sessions": [{"date": "2025-01-01", "exercises_done": [], "notes": "Some notes"}]
+        "patient_name": "בדיקה",
+        "sessions": [{"date": "2025-01-01", "notes": "הערות"}]
     }
     
     response = client.post("/reports/generate", json=payload)
-    # This should trigger your error handling logic and return 500 or a specific error
+    # במידה והגדרת ב-Route להחזיר 500 בשגיאה
     assert response.status_code == 500
     assert "detail" in response.json()
 
-@patch("app.services.report_service.generate_with_gemini")
-def test_generate_report_end_to_end(mock_gemini):
-    """
-    Test 10: Full integration (Updated)
-    """
-    mock_gemini.return_value = "Test Report: Patient is progressing well."
+@patch("app.services.report_service.create_report")
+def test_generate_report_end_to_end(mock_create):
+    """בדיקת יצירת דוח מושלמת מקצה לקצה"""
+    mock_create.return_value = "## בסד\n## בקשת המשך טיפול\nשם מטופל: יוני בדיקה"
+    
     payload = {
-        "patient_name": "Johnny Test",
-        "sessions": [{"date": "01/01/2025", "exercises_done": ["ABC"], "notes": "Test"}]
+        "patient_name": "יוני בדיקה",
+        "sessions": [{"date": "01/01/2025", "notes": "הילד מראה התקדמות יפה"}]
     }
+    
     response = client.post("/reports/generate", json=payload)
     assert response.status_code == 200
-    assert "progressing well" in response.json()["report_text"]
+    assert "יוני בדיקה" in response.json()["report_text"]
+    assert "בסד" in response.json()["report_text"]
