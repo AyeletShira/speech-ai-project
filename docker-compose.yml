@@ -7,6 +7,8 @@ services:
       - "8000:8000"
     volumes:
       - ./Backend:/app
+    env_file:
+      - .env
     environment:
       - PYTHONUNBUFFERED=1
       # שימי לב: תעתיקי לפה את המפתח האמיתי שלך במקום ה-XXX
