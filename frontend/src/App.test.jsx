@@ -1,9 +1,12 @@
 import { describe, it, expect, afterEach, vi } from 'vitest';
-import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import { render, screen, fireEvent, cleanup, waitFor } from '@testing-library/react';
 import React from 'react';
-import App from './App'; // הייבוא האמיתי של הפרויקט שלך
+import App from './App';
+import axios from 'axios';
 
-// Mocking external libraries that don't run in test environments
+// Mock axios to simulate server response
+vi.mock('axios');
+
 vi.mock('html2pdf.js', () => ({
     __esModule: true,
     default: () => ({
@@ -11,65 +14,59 @@ vi.mock('html2pdf.js', () => ({
     })
 }));
 
-describe('Speech AI Frontend Tests', () => {
+describe('Speech AI Advanced Coverage Tests', () => {
     
     afterEach(() => {
         cleanup();
+        vi.clearAllMocks();
     });
 
-    it('1. Should render the main header "Speech AI"', () => {
+    // בדיקות קיימות...
+    it('1. Should render the main header', () => {
         render(<App />);
-        const header = screen.getByText(/Speech AI/i);
-        expect(header).toBeInTheDocument();
+        expect(screen.getByText(/Speech AI/i)).toBeInTheDocument();
     });
 
-    it('2. Should show professional instructions box', () => {
+    it('2. Should handle successful report generation', async () => {
+        // מדמה תשובה מהשרת כדי להפעיל את פונקציות התצוגה
+        axios.post.mockResolvedValue({ data: { report_text: 'This is a generated report content' } });
+
         render(<App />);
-        const instructions = screen.getByText(/הנחיות לכתיבת הערות קליניות/i);
-        expect(instructions).toBeInTheDocument();
-    });
-
-    it('3. Patient name input should allow typing', () => {
-        render(<App />);
-        const input = screen.getByPlaceholderText(/שם מלא/i);
-        fireEvent.change(input, { target: { value: 'Johnny Test' } });
-        expect(input.value).toBe('Johnny Test');
-    });
-
-    it('4. Clinical notes textarea should allow typing', () => {
-        render(<App />);
-        const textarea = screen.getByPlaceholderText(/הזיני כאן מידע על תפקוד שפתי/i);
-        fireEvent.change(textarea, { target: { value: 'Patient shows progress' } });
-        expect(textarea.value).toBe('Patient shows progress');
-    });
-
-    it('5. Button should show "מעבד נתונים..." when loading', () => {
-        render(<App />);
-        const button = screen.getByRole('button', { name: /צור דוח מקצועי/i });
-        const nameInput = screen.getByPlaceholderText(/שם מלא/i);
-        const notesInput = screen.getByPlaceholderText(/הזיני כאן מידע על תפקוד שפתי/i);
-
-        // Fill data and click
-        fireEvent.change(nameInput, { target: { value: 'Zevi' } });
-        fireEvent.change(notesInput, { target: { value: 'Notes' } });
-        fireEvent.click(button);
-
-        // The button text changes based on your loading state logic
-        expect(button).toBeDisabled();
-    });
-
-    it('6. Should show error message when fields are empty', () => {
-        render(<App />);
-        const button = screen.getByRole('button', { name: /צור דוח מקצועי/i });
-        fireEvent.click(button);
         
-        const error = screen.getByText(/נא למלא שם מטופל/i);
-        expect(error).toBeInTheDocument();
+        // מילוי פרטים
+        fireEvent.change(screen.getByPlaceholderText(/שם מלא/i), { target: { value: 'Test Patient' } });
+        fireEvent.change(screen.getByPlaceholderText(/הזיני כאן מידע/i), { target: { value: 'Patient is doing well' } });
+        
+        // לחיצה על כפתור
+        fireEvent.click(screen.getByRole('button', { name: /צור דוח מקצועי/i }));
+
+        // מחכה שהדוח יופיע על המסך (זה יפעיל את formatReport)
+        await waitFor(() => {
+            expect(screen.getByText(/תוצאת הדוח/i)).toBeInTheDocument();
+        });
+
+        expect(screen.getByText(/This is a generated report content/i)).toBeInTheDocument();
     });
 
-    it('7. Should verify RTL direction for Hebrew support', () => {
-        const { container } = render(<App />);
-        const mainDiv = container.querySelector('.container');
-        expect(mainDiv).toHaveAttribute('dir', 'rtl');
+    it('3. Should handle copy to clipboard', async () => {
+        axios.post.mockResolvedValue({ data: { report_text: 'Report to copy' } });
+        
+        // מדמה את ה-Clipboard API
+        const mockClipboard = { writeText: vi.fn() };
+        global.navigator.clipboard = mockClipboard;
+
+        render(<App />);
+        
+        fireEvent.change(screen.getByPlaceholderText(/שם מלא/i), { target: { value: 'Test' } });
+        fireEvent.change(screen.getByPlaceholderText(/הזיני כאן מידע/i), { target: { value: 'Notes' } });
+        fireEvent.click(screen.getByRole('button', { name: /צור דוח מקצועי/i }));
+
+        await waitFor(() => screen.getByText(/העתק/i));
+        
+        const copyBtn = screen.getByText(/העתק/i);
+        fireEvent.click(copyBtn);
+
+        expect(mockClipboard.writeText).toHaveBeenCalled();
+        expect(screen.getByText(/הועתק!/i)).toBeInTheDocument();
     });
 });

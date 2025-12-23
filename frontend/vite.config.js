@@ -5,10 +5,10 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   test: {
-    globals: true,
-    environment: 'jsdom',
-    setupFiles: './src/setupTests.js',
-    // הגדרות דוח כיסוי (Coverage)
+    globals: true,             // Allows using describe/it without importing them
+    environment: 'jsdom',      // Simulates a browser for UI testing
+    setupFiles: './src/setupTests.js', 
+    // Coverage reporting settings
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],

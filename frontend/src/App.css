@@ -4,7 +4,7 @@
 }
 
 body { background: #f0f4f9; direction: rtl; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 40px 20px; }
-.container { max-width: 750px; margin: 0 auto; }
+.container { max-width: 98%; margin: 0 auto; }
 
 /* פס התקדמות */
 .progress-bar-container { position: fixed; top: 0; left: 0; width: 100%; height: 5px; background: #e0eafc; z-index: 9999; }
@@ -13,19 +13,19 @@ body { background: #f0f4f9; direction: rtl; font-family: 'Segoe UI', sans-serif;
 
 /* תיבת הוראות */
 .instructions-box {
-  background: #fdf9f0;
-  border-right: 5px solid #f1c40f;
+  background: #c9e9f8;
+  border-right: 5px solid #1a73e8;
   padding: 20px;
   border-radius: 12px;
   margin-bottom: 25px;
   text-align: right;
   box-shadow: 0 2px 10px rgba(0,0,0,0.03);
 }
-.instructions-box h4 { margin: 0 0 10px 0; color: #856404; }
-.instructions-box ul { margin: 0; padding-right: 20px; color: #533f03; font-size: 0.95rem; }
+.instructions-box h4 { margin: 0 0 10px 0; color: #1a73e8; }
+.instructions-box ul { margin: 0; padding-right: 20px; color: #1a73e8; font-size: 0.95rem; }
 .instructions-box li { margin-bottom: 5px; }
 
-.main-header-area { display: flex; align-items: center; justify-content: center; gap: 15px; margin-bottom: 30px; }
+.main-header-area { display: flex; align-items: center; width: 750px; justify-content: center; gap: 15px; margin-bottom: 30px; }
 .header { font-size: 3rem; background: var(--gemini-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold; margin: 0; }
 
 .form-card { background: white; padding: 30px; border-radius: 25px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
@@ -68,3 +68,10 @@ input, textarea { width: 100%; padding: 14px; border: 1px solid #ddd; border-rad
 .result-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
 .btn-pdf { background: #f059f3; color: white; border: none; padding: 10px 22px; border-radius: 50px; cursor: pointer; font-weight: bold; }
 .btn-copy { background: #5f6368; color: white; border: none; padding: 10px 22px; border-radius: 50px; cursor: pointer; font-weight: bold; margin-right: 10px; }
+.container{
+  display: flex;
+  flex-direction: row;
+} 
+.result-card.glass-effect{
+  margin-right: 30px;
+}
