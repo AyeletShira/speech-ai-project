@@ -17,8 +17,8 @@ function App() {
   const [revisionNote, setRevisionNote] = useState('');
 
   // לשימוש מקומי בדוקר. שנו לכתובת של Render לפני ה-Push הסופי.
-  // const API_URL = "https://speech-ai-project.onrender.com";
-  const API_URL = "http://localhost:8000"; 
+  const API_URL = "https://speech-ai-project.onrender.com";
+  // const API_URL = "http://localhost:8000"; 
 
   const formatReport = (text) => {
     if (!text) return "";
