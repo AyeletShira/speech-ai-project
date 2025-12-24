@@ -1,4 +1,4 @@
-:root {
+/* :root {
   --gemini-gradient: linear-gradient(135deg, #4285f4, #9b72cb, #d96570);
   --primary-blue: #1a73e8;
 }
@@ -73,4 +73,307 @@ input, textarea { width: 100%; padding: 14px; border: 1px solid #ddd; border-rad
 } 
 .result-card.glass-effect{
   margin-right: 30px;
+} */
+:root {
+  /* פלטת צבעים רגועה ומקצועית */
+  --primary-color: #546e7a; /* כחול-אפור עמוק */
+  --primary-light: #819ca9; /* גוון בהיר יותר */
+  --accent-color: #26a69a; /* טורקיז עדין לכפתורים ודגשים */
+  --bg-color: #eceff1; /* רקע כללי אפור-כחלחל בהיר מאוד */
+  --paper-bg: #ffffff;
+  --text-main: #37474f;
+  --text-muted: #607d8b;
+  --shadow-soft: 0 4px 20px rgba(55, 71, 79, 0.08);
+}
+
+body {
+  background: var(--bg-color);
+  direction: rtl;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--text-main);
+  margin: 0;
+  padding: 20px;
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex; /* העמדה בשורה כפי שביקשת */
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 30px;
+  height: calc(100vh - 40px);
+}
+
+/* --- צד ימין: טופס והנחיות --- */
+.main-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  max-width: 500px;
+  height: 100%;
+  overflow-y: auto;
+  padding-left: 10px; /* רווח לפס גלילה */
+}
+
+/* כותרת ראשית */
+.main-header-area {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 25px;
+}
+
+.header {
+  font-size: 2.2rem;
+  color: var(--primary-color);
+  font-weight: 600;
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+
+.gemini-sparkle {
+  font-size: 1.8rem;
+}
+
+/* תיבת הנחיות */
+.instructions-box {
+  background: #e0f2f1; /* ירקרק מנטה בהיר מאוד */
+  border-right: 4px solid var(--accent-color);
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 25px;
+  font-size: 0.95rem;
+}
+
+.instructions-box h4 {
+  margin: 0 0 10px 0;
+  color: #00695c;
+  font-weight: 700;
+}
+
+.instructions-box ul {
+  margin: 0;
+  padding-right: 20px;
+  color: var(--text-main);
+}
+
+.instructions-box li {
+  margin-bottom: 6px;
+}
+
+/* כרטיס הטופס */
+.form-card {
+  background: var(--paper-bg);
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: var(--shadow-soft);
+  border: 1px solid #cfd8dc;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--primary-color);
+}
+
+input, textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #b0bec5;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-family: inherit;
+  font-size: 1rem;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  background: #fafafa;
+}
+
+input:focus, textarea:focus {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px rgba(38, 166, 154, 0.1);
+  background: #fff;
+}
+
+/* כפתור יצירה */
+.generate-btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: 8px;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.generate-btn:hover {
+  background: #455a64;
+  transform: translateY(-1px);
+}
+
+.generate-btn:disabled {
+  background: #b0bec5;
+  cursor: wait;
+  transform: none;
+}
+
+/* שגיאות */
+.error-message {
+  color: #d32f2f;
+  background: #ffebee;
+  padding: 10px;
+  border-radius: 6px;
+  margin-top: 15px;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+/* --- צד שמאל: דוח --- */
+.result-card.glass-effect {
+  flex: 2;
+  background: var(--paper-bg);
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: var(--shadow-soft);
+  border: 1px solid #cfd8dc;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  margin: 0; /* ביטול המרווח הקודם */
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.result-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #eceff1;
+}
+
+.result-header h3 {
+  margin: 0;
+  color: var(--primary-color);
+  font-size: 1.3rem;
+}
+
+/* כפתורי פעולה בדוח */
+.btn-pdf, .btn-copy {
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+
+.btn-pdf {
+  background: var(--accent-color); /* טורקיז */
+  color: white;
+  margin-left: 10px;
+}
+.btn-pdf:hover { background: #00897b; }
+
+.btn-copy {
+  background: #eceff1;
+  color: var(--text-main);
+  border: 1px solid #cfd8dc;
+}
+.btn-copy:hover { background: #cfd8dc; }
+
+/* אזור הדוח עצמו (הנייר) */
+.report-paper {
+  flex: 1;
+  background: white;
+  padding: 40px;
+  border: 1px solid #e0e0e0;
+  overflow-y: auto;
+  line-height: 1.8;
+  font-size: 1.05rem;
+  color: #263238;
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.01);
+}
+
+.report-paper strong {
+  color: var(--primary-color);
+  font-weight: 700;
+}
+
+/* אזור העדכון */
+.revision-area {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #eceff1;
+}
+
+.revision-area h4 {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  margin-top: 0;
+}
+
+.revision-area button.generate-btn {
+  width: auto;
+  background: var(--accent-color);
+  font-size: 1rem;
+  padding: 0 30px;
+}
+.revision-area button.generate-btn:hover {
+  background: #00897b;
+}
+
+/* Progress Bar */
+.progress-bar-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: #e0f2f1;
+  z-index: 9999;
+}
+.progress-bar-fill {
+  height: 100%;
+  background: var(--accent-color);
+  width: 30%;
+  animation: progressAnim 1.5s infinite ease-in-out;
+}
+@keyframes progressAnim {
+  0% { transform: translateX(350%); }
+  100% { transform: translateX(-350%); }
+}
+
+/* התאמה למובייל */
+@media (max-width: 900px) {
+  .container {
+    flex-direction: column;
+    height: auto;
+  }
+  .main-section, .result-card.glass-effect {
+    max-width: 100%;
+    width: 100%;
+    height: auto;
+  }
+  .result-card.glass-effect {
+    margin-right: 0;
+  }
+  .report-paper {
+    min-height: 400px;
+  }
 }
