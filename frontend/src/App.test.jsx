@@ -1,78 +1,96 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { render, screen, fireEvent, cleanup } from '@testing-library/react';
-import React, { useState } from 'react';
+import { describe, it, expect, afterEach, vi } from 'vitest';
+import { render, screen, fireEvent, cleanup, waitFor } from '@testing-library/react';
+import React from 'react';
+import App from './App';
+import axios from 'axios';
 
+vi.mock('axios');
+vi.mock('html2pdf.js', () => ({
+    __esModule: true,
+    default: () => ({ from: () => ({ save: () => {} }) })
+}));
 
-
-const MockApp = () => {
-  const [input, setInput] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [response, setResponse] = useState('');
-
-  const handleSend = () => {
-    if (!input.trim()) return; 
-    setLoading(true);
-    setTimeout(() => { 
-        setResponse("AI Response: " + input);
-        setLoading(false);
-    }, 100);
-  };
-
-  return (
-    <div>
-      <input 
-        placeholder="Ask Gemini..." 
-        value={input} 
-        onChange={(e) => setInput(e.target.value)} 
-      />
-      <button onClick={handleSend} disabled={loading || !input}>
-        {loading ? 'Thinking...' : 'Send'}
-      </button>
-      {response && <div data-testid="ai-response">{response}</div>}
-    </div>
-  );
-};
-
-
-describe('AI Chat Tests', () => {
-    
-  
+describe('Frontend Full Suite - 7 Tests', () => {
     afterEach(() => {
         cleanup();
+        vi.clearAllMocks();
     });
 
-    it('1. Input field should allow typing', () => {
-        render(<MockApp />);
-        
-        const input = screen.getByPlaceholderText(/Ask Gemini/i);
-        
-        fireEvent.change(input, { target: { value: 'Hello AI' } });
-        
-        expect(input.value).toBe('Hello AI');
+    it('1. Renders main title correctly', () => {
+        render(<App />);
+        expect(screen.getByText(/SpeechAI/i)).toBeInTheDocument();
     });
 
-    it('2. Validation: Button should be DISABLED when input is empty', () => {
-        render(<MockApp />);
-        
-        const button = screen.getByRole('button');
-        const input = screen.getByPlaceholderText(/Ask Gemini/i);
-
-        fireEvent.change(input, { target: { value: '' } });
-        expect(button).toBeDisabled();
-
-        fireEvent.change(input, { target: { value: 'Is this working?' } });
-        expect(button).not.toBeDisabled();
+    it('2. Shows clinical instructions box', () => {
+        render(<App />);
+        expect(screen.getByText(/הנחיות לכתיבת הערות קליניות/i)).toBeInTheDocument();
     });
 
-    it('3. Loading State: Button should verify "Thinking..." status', async () => {
-        render(<MockApp />);
-        const input = screen.getByPlaceholderText(/Ask Gemini/i);
-        const button = screen.getByRole('button');
+    it('3. Updates patient name on input', () => {
+        render(<App />);
+        const input = screen.getByPlaceholderText(/שם מלא/i);
+        fireEvent.change(input, { target: { value: 'ישראל ישראלי' } });
+        expect(input.value).toBe('ישראל ישראלי');
+    });
 
-        fireEvent.change(input, { target: { value: 'Tell me a joke' } });
-        fireEvent.click(button);
+    it('4. Handles API Error state', async () => {
+        axios.post.mockRejectedValue(new Error('Server Error'));
+        render(<App />);
+        
+        // מילוי שדות חובה כדי למנוע ולידציה מקומית
+        fireEvent.change(screen.getByPlaceholderText(/שם מלא/i), { target: { value: 'בדיקה' } });
+        fireEvent.change(screen.getByPlaceholderText(/הזיני כאן מידע/i), { target: { value: 'הערות בדיקה' } });
+        
+        fireEvent.click(screen.getByRole('button', { name: /צור דוח מקצועי/i }));
+        
+        await waitFor(() => {
+            // מחפש הודעת שגיאה כלשהי שמופיעה ב-UI שלך
+            expect(screen.queryByText(/שגיאה/i) || screen.queryByText(/error/i) || screen.queryByRole('alert')).toBeTruthy();
+        });
+    });
 
-        expect(button).toHaveTextContent(/Thinking/i);
-        expect(button).toBeDisabled();
+    it('5. Generates report successfully', async () => {
+        axios.post.mockResolvedValue({ data: { report_text: 'דוח קליני מוצלח' } });
+        render(<App />);
+        
+        fireEvent.change(screen.getByPlaceholderText(/שם מלא/i), { target: { value: 'בדיקה' } });
+        fireEvent.change(screen.getByPlaceholderText(/הזיני כאן מידע/i), { target: { value: 'הערות בדיקה' } });
+        
+        fireEvent.click(screen.getByRole('button', { name: /צור דוח מקצועי/i }));
+        
+        // מחכה לטקסט שחוזר מה-Mock
+        await waitFor(() => expect(screen.getByText(/דוח קליני מוצלח/i)).toBeInTheDocument());
+    });
+
+  it('6. Copies report to clipboard', async () => {
+        // מדמים הצלחה של השרת
+        axios.post.mockResolvedValue({ data: { report_text: 'Text to copy' } });
+        
+        // יצירת Mock ל-Clipboard
+        const mockWriteText = vi.fn().mockResolvedValue(undefined);
+        global.navigator.clipboard = {
+            writeText: mockWriteText
+        };
+        
+        render(<App />);
+        
+        // מילוי פרטים וביצוע יצירה
+        fireEvent.change(screen.getByPlaceholderText(/שם מלא/i), { target: { value: 'בדיקה' } });
+        fireEvent.change(screen.getByPlaceholderText(/הזיני כאן מידע/i), { target: { value: 'הערות בדיקה' } });
+        fireEvent.click(screen.getByRole('button', { name: /צור דוח מקצועי/i }));
+        
+        // מחכים שהכפתור יופיע
+        const copyBtn = await screen.findByText(/העתק/i);
+        fireEvent.click(copyBtn);
+        
+        // בודקים שהפונקציה נקראה (הכי חשוב לבדיקת אינטראקציה)
+        expect(mockWriteText).toHaveBeenCalled();
+    });
+
+    it('7. Checks if textarea updates correctly', () => {
+        render(<App />);
+        const textarea = screen.getByPlaceholderText(/הזיני כאן מידע/i);
+        fireEvent.change(textarea, { target: { value: 'הערות חדשות' } });
+        expect(textarea.value).toBe('הערות חדשות');
     });
 });

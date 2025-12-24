@@ -5,3 +5,4 @@ httpx
 pytest
 python-dotenv
 google-generativeai
+pytest-cov==4.1.0
