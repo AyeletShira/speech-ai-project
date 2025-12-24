@@ -11,7 +11,7 @@ services:
       - .env
     environment:
       - PYTHONUNBUFFERED=1
-      # שימי לב: תעתיקי לפה את המפתח האמיתי שלך במקום ה-XXX
+      
       - GOOGLE_API_KEY=${GEMINI_API_KEY}
   frontend:
     build: ./frontend

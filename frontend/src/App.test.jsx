@@ -2,9 +2,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import React, { useState } from 'react';
 
-// --- החלק הזה מדמה את הקומפוננטה שלך ---
-// (בפרויקט האמיתי שלך: תמחקי את החלק הזה ותעשי import לקומפוננטה האמיתית שלך)
-// import App from './App'; 
+
 
 const MockApp = () => {
   const [input, setInput] = useState('');
@@ -12,9 +10,9 @@ const MockApp = () => {
   const [response, setResponse] = useState('');
 
   const handleSend = () => {
-    if (!input.trim()) return; // מניעת שליחה של ריק
+    if (!input.trim()) return; 
     setLoading(true);
-    setTimeout(() => { // דימוי של תשובה מ-AI
+    setTimeout(() => { 
         setResponse("AI Response: " + input);
         setLoading(false);
     }, 100);
@@ -34,25 +32,22 @@ const MockApp = () => {
     </div>
   );
 };
-// ----------------------------------------
+
 
 describe('AI Chat Tests', () => {
     
-    // מנקה את המסך אחרי כל בדיקה כדי שלא יתערבבו
+  
     afterEach(() => {
         cleanup();
     });
 
     it('1. Input field should allow typing', () => {
-        render(<MockApp />); // בפרויקט שלך: <App />
+        render(<MockApp />);
         
-        // מוצאים את תיבת הטקסט (לפי ה-Placeholder שלה)
         const input = screen.getByPlaceholderText(/Ask Gemini/i);
         
-        // מדמים הקלדה של משתמש
         fireEvent.change(input, { target: { value: 'Hello AI' } });
         
-        // בודקים שהערך באמת השתנה
         expect(input.value).toBe('Hello AI');
     });
 
@@ -62,11 +57,9 @@ describe('AI Chat Tests', () => {
         const button = screen.getByRole('button');
         const input = screen.getByPlaceholderText(/Ask Gemini/i);
 
-        // שלב א: הטקסט ריק -> הכפתור צריך להיות נעול
         fireEvent.change(input, { target: { value: '' } });
         expect(button).toBeDisabled();
 
-        // שלב ב: כותבים משהו -> הכפתור צריך להשתחרר
         fireEvent.change(input, { target: { value: 'Is this working?' } });
         expect(button).not.toBeDisabled();
     });
@@ -76,12 +69,9 @@ describe('AI Chat Tests', () => {
         const input = screen.getByPlaceholderText(/Ask Gemini/i);
         const button = screen.getByRole('button');
 
-        // מקלידים ולוחצים
         fireEvent.change(input, { target: { value: 'Tell me a joke' } });
         fireEvent.click(button);
 
-        // בודקים שמיד אחרי הלחיצה, הכפתור משנה טקסט וננעל
-        // שימי לב: זה תלוי איך מימשת את זה אצלך, תתאימי את הטקסט 'Thinking' למה שיש אצלך
         expect(button).toHaveTextContent(/Thinking/i);
         expect(button).toBeDisabled();
     });

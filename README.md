@@ -1,49 +1,73 @@
 📋 Speech AI: Clinical Report Automation System
-פרויקט גמר: בינה מלאכותית בשירות קלינאיות התקשורת
-מערכת Full-Stack מבוססת AI המייצרת אוטומציה מלאה לכתיבת מסמכי "בקשה להמשך טיפול". המערכת מקצרת זמן כתיבת דוח מ-30 דקות ל-30 שניות בלבד, תוך שמירה על דיוק קליני ורהיטות שפתית.
+Final Project: Artificial Intelligence for Speech-Language Pathologists
 
-🛠 הארכיטקטורה הטכנולוגית (Technical Stack)
-Backend: FastAPI (Python 3.9) - בחירה בשרת אסינכרוני מהיר המאפשר ניהול בקשות AI ללא חסימת ה-Event Loop.
+Developed by: Ayelet Sorovski & Yael Bloch | December 2025
 
-Frontend: React 18 + Vite - שימוש ב-State Management לניהול זרימת נתונים דינמית מהמשתמש ועד לקבלת התוצאה מה-AI.
+📖 Overview
+Speech AI is a Full-Stack AI-based system designed to fully automate the generation of "Request for Continued Treatment" documents. The system solves a critical administrative pain point for clinicians, reducing report writing time from 30 minutes to just 30 seconds, while strictly maintaining clinical accuracy and linguistic fluency.
 
-Containerization: Docker & Docker Compose - ניהול סביבות עבודה מבודדות ל-Frontend ו-Backend, מה שמבטיח הרצה חלקה ("It works on my machine").
+🛠 Technical Stack
+Backend
+FastAPI (Python 3.9): Selected for its high-performance asynchronous capabilities, allowing efficient management of AI requests without blocking the Event Loop.
 
-AI Integration: Google Gemini SDK (gemini-1.5-flash) - התממשקות למודלי שפה גדולים (LLM) דרך API מאובטח.
+Pydantic: Used for strict data validation and schema enforcement.
 
-🧠 אסטרטגיית ה-Prompt Engineering
-הפרויקט מתמקד בטכניקות מתקדמות של הנדסת פרומפטים:
+Frontend
+React 18 + Vite: Utilizes advanced State Management to handle dynamic data flow from user input to AI result generation.
 
-Role Assignment: המודל הונחה לתפקד כקלינאית תקשורת בעלת ניסיון קליני עשיר.
+UI/UX: Focus on intuitive design for non-technical users.
 
-Inference Logic: המערכת יודעת להסיק מסקנות רפואיות ממידע גולמי (למשל: הקשר בין ממצא א.א.ג לבין התקדמות שפתית).
+Infrastructure & DevOps
+Docker & Docker Compose: Manages isolated environments for Frontend and Backend, ensuring a smooth "It works on my machine" experience and consistent container orchestration.
 
-Few-Shot & Domain Expertise: הטמעת דוגמאות לניתוח מקרים רב-לשוניים מורכבים (כמו המרה של שפה רביעית לעברית).
+AI Integration
+Google Gemini SDK (gemini-1.5-flash): Integration with Large Language Models (LLM) via a secure API interface.
 
-Constraint Satisfaction: אכיפה של מבנה דוח אחיד (בס"ד, רקע, סיכום אבחון כולל סטיות תקן, מטרות והמלצות).
+🧠 Prompt Engineering Strategy
+The core of the system relies on advanced prompt engineering techniques to ensure precise clinical results:
 
-🔄 זרימת נתונים (Detailed Data Flow)
-Client-Side: איסוף נתונים גולמיים ומניפולציה של ה-DOM לצורך הצגת PDF ועריכה חיה.
+Role Assignment: The model is instructed to function as a Speech-Language Pathologist with extensive clinical experience.
 
-Network Layer: תקשורת RESTful מאובטחת תחת הגדרות CORS קפדניות.
+Inference Logic: The system is capable of deducing medical conclusions from raw data (e.g., correlating ENT findings with language progress).
 
-Server-Side Validation: שימוש ב-Pydantic Schemas לאימות מבנה הנתונים ומניעת שגיאות 422.
+Few-Shot & Domain Expertise: Implementation of complex multilingual case analysis examples (such as converting foreign language syntax into proper Hebrew).
 
-AI Processing: בניית פרומפט דינמי, עיבוד הנתונים ב-Cloud והחזרת תשובה מובנית (JSON).
+Constraint Satisfaction: Strict enforcement of a uniform report structure (Header/BS"D, Background, Diagnostic Summary including Standard Deviations, Goals, and Recommendations).
 
-🧪 אתגרים טכניים שפתרתי בפרויקט
-סנכרון Container-to-Container: הגדרת תקשורת רשת פנימית בתוך Docker Compose לחיבור ה-Frontend ל-API.
+🔄 Detailed Data Flow
+Client-Side: Collection of raw clinical data and DOM manipulation for PDF preview and live editing.
 
-RTL PDF Export: פתרון אתגרי ייצוא טקסט מימין לשמאל (Hebrew Support) בפורמט PDF בעזרת html2pdf.js.
+Network Layer: Secure RESTful communication under strict CORS configurations.
 
-Editable UI: יצירת ממשק עריכה אינטואיטיבי (WYSIWYG) המאפשר סנכרון בין טקסט ה-AI לבין התיקונים הידניים של הקלינאית.
+Server-Side Validation: Utilization of Pydantic Schemas to verify data structure integrity and prevent HTTP 422 errors.
 
-CORS Management: הגדרת Middleware מורכב ב-FastAPI לאישור בקשות מדפדפנים בסביבת פיתוח מבוזרת.
+AI Processing: Dynamic prompt construction, Cloud processing, and generation of a structured JSON response.
 
-🚀 הוראות הרצה מהירות
-שכפול המאגר (git clone).
+🧪 Technical Challenges Solved
+During the development lifecycle, we tackled and resolved several complex engineering challenges:
 
+Container-to-Container Synchronization: Configured internal network communication within Docker Compose to establish a stable connection between the Frontend and the API.
 
-הרצה בטרמינל: docker-compose up --build.
+RTL PDF Export: Overcame "Right-to-Left" text rendering issues (Hebrew Support) in PDF generation using html2pdf.js.
 
-פותח כפרויקט גמר על ידי איילת סורובסקי ויעל בלוך | דצמבר 2025
+Editable UI: Created a WYSIWYG interface allowing real-time synchronization between the AI-generated text and manual corrections made by the clinician.
+
+CORS Management: Configured complex Middleware in FastAPI to authorize browser requests in a distributed development environment.
+
+🚀 Quick Start
+To run the system locally, follow these steps:
+
+1. Clone the Repository
+Bash
+
+git clone https://github.com/your-username/speech-ai-project.git
+cd speech-ai-project
+2. Run with Docker
+Ensure Docker Desktop is running, then execute:
+
+Bash
+
+docker-compose up --build
+The application will be available at: http://localhost:5173 (or your configured port).
+
+© All rights reserved to Ayelet Sorovski & Yael Bloch 2025

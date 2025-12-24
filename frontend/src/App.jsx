@@ -12,13 +12,12 @@ function App() {
   const [error, setError] = useState(null);
   const [isCopied, setIsCopied] = useState(false);
   
-  // לוגיקת הזיכרון והצ'אט
+  
   const [history, setHistory] = useState([]);
   const [revisionNote, setRevisionNote] = useState('');
 
-  // לשימוש מקומי בדוקר. שנו לכתובת של Render לפני ה-Push הסופי.
   const API_URL = "https://speech-ai-project.onrender.com";
-  // const API_URL = "http://localhost:8000"; 
+ 
 
   const formatReport = (text) => {
     if (!text) return "";
@@ -109,7 +108,7 @@ function App() {
         <h1 className="header">SpeechAI</h1>
       </header>
 
-      {/* הטיפים המקצועיים המעודכנים לפי הגדרות הבקאנד */}
+      
       
       <div className="instructions-box">
         <h4>💡 הנחיות לכתיבת הערות קליניות:</h4>
