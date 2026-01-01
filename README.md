@@ -70,4 +70,4 @@ Bash
 docker-compose up --build
 The application will be available at: http://localhost:5173 (or your configured port).
 
-© All rights reserved to Ayelet Sorovski & Yael Bloch 2025
+© All rights reserved to Ayelet Sorovsky & Yael Bloch 2025
